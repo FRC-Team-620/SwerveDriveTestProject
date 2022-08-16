@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveCommand extends CommandBase {
-    private final SwerveSubsystem m_subsystem;
+    private SwerveSubsystem swerveSubsystem;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SwerveCommand(SwerveSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public SwerveCommand(SwerveSubsystem swerveSubsystem) {
+    this.swerveSubsystem = swerveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(this.swerveSubsystem);
   }
 
   // Called when the command is initially scheduled.
