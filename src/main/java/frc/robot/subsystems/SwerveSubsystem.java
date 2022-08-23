@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveVisualizer;
+import frc.robot.swerve.SimSwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -23,10 +24,15 @@ public class SwerveSubsystem extends SubsystemBase {
   Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
 
 
-  SwerveModuleState frontLeft = new SwerveModuleState();
-  SwerveModuleState frontRight = new SwerveModuleState();
-  SwerveModuleState backLeft = new SwerveModuleState();
-  SwerveModuleState backRight = new SwerveModuleState();
+  SwerveModuleState frontLeftState = new SwerveModuleState();
+  SwerveModuleState frontRightState = new SwerveModuleState();
+  SwerveModuleState backLeftState = new SwerveModuleState();
+  SwerveModuleState backRightState = new SwerveModuleState();
+
+  SimSwerveModule frontLeft = new SimSwerveModule();
+  SimSwerveModule frontRight = new SimSwerveModule();
+  SimSwerveModule backLeft = new SimSwerveModule();
+  SimSwerveModule backRight = new SimSwerveModule();
   
   // var frontLeftOptimized = SwerveModuleState.optimize(frontLeft, new
   // Rotation2d(turningEncoder.getDistance()));
@@ -46,10 +52,10 @@ public class SwerveSubsystem extends SubsystemBase {
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
     SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
-    frontLeft = moduleStates[0];
-    frontRight = moduleStates[1];
-    backLeft = moduleStates[2];
-    backRight = moduleStates[3];
+    frontLeftState = moduleStates[0];
+    frontRightState = moduleStates[1];
+    backLeftState = moduleStates[2];
+    backRightState = moduleStates[3];
 	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec)), moduleStates);
   }
 
@@ -57,8 +63,17 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
-    swerveVisualizer.update(frontLeft.angle, frontRight.angle, backLeft.angle, backRight.angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
+    frontLeft.setDesiredState(frontLeftState);
+    frontRight.setDesiredState(frontRightState);
+    backLeft.setDesiredState(backLeftState);
+    backRight.setDesiredState(backRightState);
+
+    frontLeft.update();
+    frontRight.update();
+    backLeft.update();
+    backRight.update();
+
+    swerveVisualizer.update(frontLeft.getDesiredState().angle, frontRight.getDesiredState().angle, backLeft.getDesiredState().angle, backRight.getDesiredState().angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
   }
 
   @Override

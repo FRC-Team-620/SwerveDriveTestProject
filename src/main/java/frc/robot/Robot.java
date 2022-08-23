@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.RobotMath;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -87,8 +88,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-  	//TODO BUG: Scale Input values to be in Meters per second and Rad per second. Add deadzones.
-    robotContainer.swerveSubsystem.swerveDrive(-driverController.getLeftY(), -driverController.getLeftX(), -driverController.getRightX());
+    double xVelocity = RobotMath.deadZone(-driverController.getLeftY(), 0.1)*Constants.maxVelocityMetersPerSecond;
+    double yVelocity = RobotMath.deadZone(-driverController.getLeftX(), 0.1)*Constants.maxVelocityMetersPerSecond;
+    double rotationSpeed = RobotMath.deadZone(-driverController.getRawAxis(2), 0.1)*Constants.maxRotationRadsPerSecond;
+
+
+    robotContainer.swerveSubsystem.swerveDrive(xVelocity, yVelocity, rotationSpeed);
   }
 
   @Override
