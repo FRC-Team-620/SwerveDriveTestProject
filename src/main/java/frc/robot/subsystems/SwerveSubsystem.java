@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveVisualizer;
@@ -49,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight = moduleStates[1];
     backLeft = moduleStates[2];
     backRight = moduleStates[3];
-	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(theta)), moduleStates);
+	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec)), moduleStates);
   }
 
 
