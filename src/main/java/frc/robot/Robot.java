@@ -87,9 +87,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-    //TODO BUG: Fix controls being Inverted. Scale Input values to be in Meters per second and Rad per second. Add deadzones.
-    robotContainer.swerveSubsystem.swerveDrive(driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX());
+  	//TODO BUG: Scale Input values to be in Meters per second and Rad per second. Add deadzones.
+    robotContainer.swerveSubsystem.swerveDrive(-driverController.getLeftY(), -driverController.getLeftX(), -driverController.getRightX());
   }
 
   @Override
