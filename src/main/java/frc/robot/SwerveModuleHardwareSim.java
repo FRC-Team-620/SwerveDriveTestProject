@@ -42,7 +42,7 @@ public class SwerveModuleHardwareSim {
         casterMotorVolts = MathUtil.clamp(volts, -12, 12);
     }
 
-    public void setWheelMotorrVolts(double volts) {
+    public void setWheelMotorVolts(double volts) {
         wheelMotorVolts = MathUtil.clamp(volts, -12, 12);
     }
 

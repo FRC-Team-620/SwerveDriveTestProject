@@ -16,4 +16,7 @@ public final class Constants {
     public static double wheelRadius = 0.04;
     public static double maxVelocityMetersPerSecond = 2;
     public static double maxRotationRadsPerSecond = 0.1;
+    public static double driveKp = 10;
+    public static double driveKi = 0.0;
+    public static double driveKd = 0.0;
 }

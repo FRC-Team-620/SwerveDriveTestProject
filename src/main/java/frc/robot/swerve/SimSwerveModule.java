@@ -17,7 +17,7 @@ public class SimSwerveModule implements ISwerveModuleState {
     SwerveModuleState desiredState;
     SwerveModuleHardwareSim sim;
     public SimSwerveModule(){
-        drivePID = new PIDController(0.1, 0, 0);
+        drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
         anglePID = new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(6.0, 6.0));
         anglePID.enableContinuousInput(0, 2*Math.PI);
         sim = new SwerveModuleHardwareSim();
@@ -56,10 +56,11 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void update(){
         sim.update(0.02);
         
-        sim.setWheelMotorrVolts(drivePID.calculate(sim.getWheelRadPerSec()));
+        sim.setWheelMotorVolts(drivePID.calculate(sim.getWheelRadPerSec()));
         sim.setCasterMotorVolts(anglePID.calculate(sim.getCasterAngleRad()%2*Math.PI));
 
         SmartDashboard.putNumber("Desired Speed", desiredState.speedMetersPerSecond);
         SmartDashboard.putNumber("Desired Angle", desiredState.angle.getRadians());
+        SmartDashboard.putNumber("Speed", sim.getWheelRadPerSec()*Constants.wheelRadius);
     }
 }

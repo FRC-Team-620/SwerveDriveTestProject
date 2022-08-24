@@ -73,7 +73,6 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight.update();
     backLeft.update();
     backRight.update();
-
     swerveVisualizer.update(frontLeft.getDesiredState().angle, frontRight.getDesiredState().angle, backLeft.getDesiredState().angle, backRight.getDesiredState().angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
   }
 
