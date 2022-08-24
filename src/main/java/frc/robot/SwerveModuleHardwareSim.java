@@ -47,21 +47,20 @@ public class SwerveModuleHardwareSim {
     }
 
     public double getWheelRadPerSec() {
-        return wheelRadPerSec/kDriveGearRatio;
+        return wheelRadPerSec;
     }
 
     public double getCasterAngleRad() {
-        return casterAngleRad/kTurnGearRatio;
+        return casterAngleRad;
     }
 
     public void update(double dt) {
         wheelSim.setInputVoltage(wheelMotorVolts);
         casterSim.setInputVoltage(casterMotorVolts);
-
         wheelSim.update(dt);
         casterSim.update(dt);
 
-        casterAngleRad += wheelSim.getAngularVelocityRadPerSec() * dt;
+        casterAngleRad += casterSim.getAngularVelocityRadPerSec() * dt;
         wheelRadPerSec = wheelSim.getAngularVelocityRadPerSec();
     }
 }
