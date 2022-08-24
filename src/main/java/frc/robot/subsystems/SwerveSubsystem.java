@@ -51,12 +51,13 @@ public class SwerveSubsystem extends SubsystemBase {
   	// Calculate what angle the wheels need to be and their speed based off our
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
+    SwerveModuleState[] actualModuleStates = new SwerveModuleState[]{frontLeft.getModuleState(), frontRight.getModuleState(), backLeft.getModuleState(), backRight.getModuleState()};
     SwerveModuleState[] moduleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
     frontLeftState = moduleStates[0];
     frontRightState = moduleStates[1];
     backLeftState = moduleStates[2];
     backRightState = moduleStates[3];
-	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec)), moduleStates);
+	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec)), actualModuleStates);
   }
 
 
