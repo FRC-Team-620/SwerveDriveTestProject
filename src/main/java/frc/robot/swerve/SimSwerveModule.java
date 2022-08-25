@@ -32,12 +32,14 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void setDesiredState(SwerveModuleState state) {
         desiredState = state;
         TrapezoidProfile.State goal = new TrapezoidProfile.State(MathUtil.angleModulus(desiredState.angle.getRadians()), 0);
-        drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius);
+        
+        // Drive PID units are radians per second. 
+        drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius); 
         anglePID.setGoal(goal);
     }
 
     @Override
-    public SwerveModuleState getModuleState() {
+    public SwerveModuleState getActualState() {
         return new SwerveModuleState(sim.getWheelRadPerSec()* Constants.wheelRadius, new Rotation2d(sim.getCasterAngleRad()));
     }
 
@@ -56,11 +58,11 @@ public class SimSwerveModule implements ISwerveModuleState {
         sim.update(0.02);
         
         sim.setWheelMotorVolts(drivePID.calculate(sim.getWheelRadPerSec()));
-        sim.setCasterMotorVolts(anglePID.calculate(sim.getCasterAngleRad()%2*Math.PI));
+        sim.setCasterMotorVolts(anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()%2*Math.PI)));
 
         SmartDashboard.putNumber("Desired Speed" + canID, desiredState.speedMetersPerSecond);
-        SmartDashboard.putNumber("Desired Angle" + canID, desiredState.angle.getRadians());
-        SmartDashboard.putNumber("Angle" + canID, sim.getCasterAngleRad());
+        SmartDashboard.putNumber("Desired Angle" + canID, MathUtil.angleModulus(desiredState.angle.getRadians()));
+        SmartDashboard.putNumber("Angle" + canID, MathUtil.angleModulus(sim.getCasterAngleRad()));
         SmartDashboard.putNumber("Speed" + canID, sim.getWheelRadPerSec()*Constants.wheelRadius);
     }
 }
