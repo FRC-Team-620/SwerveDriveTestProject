@@ -21,7 +21,7 @@ public final class Constants {
     public static double driveKd = 0.0;
     public static double angleKp = 1.6;
     public static double angleKi = 0.05;
-    public static double angleKd = 0.34;
+    public static double angleKd = 0;
     public static int frontLeftCAN = -1;
     public static int frontRightCAN = -2;
     public static int backLeftCAN = -3;

@@ -17,7 +17,6 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     SwerveModuleState desiredState;
     SwerveModuleHardwareSim sim;
-    int canID;
     String nTablesName = "";
     private static int ID_TRACKER = 0; 
     int id;
@@ -30,7 +29,6 @@ public class SimSwerveModule implements ISwerveModuleState {
         drivePID.setIntegratorRange(-12, 12);
         anglePID.setIntegratorRange(-12, 12);
         sim = new SwerveModuleHardwareSim();
-        canID = CANID;
         SmartDashboard.putData(nTablesName + "Drive PID", drivePID);
         SmartDashboard.putData(nTablesName + "Caster PID", anglePID);
     }
@@ -43,7 +41,7 @@ public class SimSwerveModule implements ISwerveModuleState {
         
         // Drive PID units are radians per second. 
         drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius); 
-        anglePID.setGoal(goal);
+        anglePID.setGoal(MathUtil.angleModulus(desiredState.angle.getRadians()));
     }
 
     @Override
@@ -65,7 +63,7 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void update(){
         sim.update(0.02);
         double driveVolts = drivePID.calculate(sim.getWheelRadPerSec());
-        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()%2));
+        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()));
         
         sim.setWheelMotorVolts(driveVolts);
         sim.setCasterMotorVolts(angleVolts);
