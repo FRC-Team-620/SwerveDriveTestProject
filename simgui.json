@@ -16,6 +16,10 @@
       "/SmartDashboard/-2": "PIDController",
       "/SmartDashboard/-3": "PIDController",
       "/SmartDashboard/-4": "PIDController",
+      "/SmartDashboard/Drive--1": "PIDController",
+      "/SmartDashboard/Drive--2": "PIDController",
+      "/SmartDashboard/Drive--3": "PIDController",
+      "/SmartDashboard/Drive--4": "PIDController",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PIDController[1]": "PIDController",
       "/SmartDashboard/PIDController[3]": "PIDController",
@@ -33,6 +37,9 @@
   },
   "NetworkTables": {
     "SmartDashboard": {
+      "Angle--1": {
+        "open": true
+      },
       "open": true
     }
   },
@@ -116,7 +123,40 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 795,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Desired Angle-1"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Angle-1"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }
