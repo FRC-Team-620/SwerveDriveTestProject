@@ -20,17 +20,16 @@ public class SimSwerveModule implements ISwerveModuleState {
     int canID;
     public SimSwerveModule(int CANID){
         drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
-        anglePID = new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(6.0, 6.0));
+        anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(6.0, 6.0));
         anglePID.enableContinuousInput(-Math.PI, Math.PI);
         sim = new SwerveModuleHardwareSim();
         canID = CANID;
-        SmartDashboard.putData(""+CANID, drivePID);
-        SmartDashboard.putData(""+CANID, anglePID);
+        SmartDashboard.putData("Drive-"+CANID, drivePID);
+        SmartDashboard.putData("Angle-"+CANID, anglePID);
     }
 
     @Override
     public void setDesiredState(SwerveModuleState state) {
-        // TODO Auto-generated method stub
         desiredState = state;
         TrapezoidProfile.State goal = new TrapezoidProfile.State(MathUtil.angleModulus(desiredState.angle.getRadians()), 0);
         drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius);
@@ -39,13 +38,11 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public SwerveModuleState getModuleState() {
-        // TODO Auto-generated method stub
         return new SwerveModuleState(sim.getWheelRadPerSec()* Constants.wheelRadius, new Rotation2d(sim.getCasterAngleRad()));
     }
 
     @Override
     public SwerveModuleState getDesiredState() {
-        // TODO Auto-generated method stub
         return desiredState;
     }
 
