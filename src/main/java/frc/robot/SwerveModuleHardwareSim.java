@@ -29,12 +29,13 @@ public class SwerveModuleHardwareSim {
     //Drive
 
     public static final double DrivekvVoltSecondsPerMeter = 2.3;
-    public static final double DrivekaVoltSecondsSquaredPerMeter = 0.0917;
+    public static final double DrivekaVoltSecondsSquaredPerMeter = 0.1; //#TODO switch to using meter/s for our native mesurment or fix this to be in radians. Look how sys id works. 
     // Hacked together simulator so students are able to test and learn about pid
     // loops for swerve.
     public SwerveModuleHardwareSim() {
-        casterSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian),DCMotor.getNEO(1),kTurnGearRatio);
-        wheelSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(DrivekvVoltSecondsPerMeter,DrivekaVoltSecondsSquaredPerMeter),DCMotor.getNEO(1),kDriveGearRatio);
+        casterSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian),DCMotor.getNEO(1),kTurnGearRatio); //TODO: Seems like gear ratio does not do anything
+        wheelSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(DrivekvVoltSecondsPerMeter*Constants.wheelRadius,DrivekaVoltSecondsSquaredPerMeter),DCMotor.getNEO(1),kTurnGearRatio);
+        // wheelSim = new FlywheelSim(DCMotor.getNEO(1), 1/kDriveGearRatio, 0.001);
         
     }
 
@@ -59,7 +60,6 @@ public class SwerveModuleHardwareSim {
         casterSim.setInputVoltage(casterMotorVolts);
         wheelSim.update(dt);
         casterSim.update(dt);
-
         casterAngleRad += casterSim.getAngularVelocityRadPerSec() * dt;
         wheelRadPerSec = wheelSim.getAngularVelocityRadPerSec();
     }
