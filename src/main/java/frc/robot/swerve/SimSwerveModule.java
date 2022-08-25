@@ -20,7 +20,7 @@ public class SimSwerveModule implements ISwerveModuleState {
     int canID;
     public SimSwerveModule(int CANID){
         drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
-        anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(6.0, 6.0));
+        anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(6.0*Math.PI, 6.0*Math.PI));
         anglePID.enableContinuousInput(-Math.PI, Math.PI);
         sim = new SwerveModuleHardwareSim();
         canID = CANID;
@@ -30,7 +30,7 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public void setDesiredState(SwerveModuleState state) {
-        desiredState = state;
+        desiredState = SwerveModuleState.optimize(state, new Rotation2d(sim.getCasterAngleRad()));
         TrapezoidProfile.State goal = new TrapezoidProfile.State(MathUtil.angleModulus(desiredState.angle.getRadians()), 0);
         
         // Drive PID units are radians per second. 
@@ -40,7 +40,7 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public SwerveModuleState getActualState() {
-        return new SwerveModuleState(sim.getWheelRadPerSec()* Constants.wheelRadius, new Rotation2d(sim.getCasterAngleRad()));
+        return new SwerveModuleState(sim.getWheelRadPerSec()* Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
     }
 
     @Override

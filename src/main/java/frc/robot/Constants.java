@@ -19,8 +19,8 @@ public final class Constants {
     public static double driveKp = 0.1;
     public static double driveKi = 0.0;
     public static double driveKd = 0.0;
-    public static double angleKp = 1;
-    public static double angleKi = 0.0;
+    public static double angleKp = 0.25;
+    public static double angleKi = 0.01;
     public static double angleKd = 0.0;
     public static int frontLeftCAN = -1;
     public static int frontRightCAN = -2;
