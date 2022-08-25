@@ -20,9 +20,10 @@ public class SimSwerveModule implements ISwerveModuleState {
     int canID;
     public SimSwerveModule(int CANID){
         drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
-        anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(6.0*Math.PI, 6.0*Math.PI));
+        anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(12.0*Math.PI, 12.0*Math.PI));
         anglePID.enableContinuousInput(-Math.PI, Math.PI);
         drivePID.setIntegratorRange(-12, 12);
+        anglePID.setIntegratorRange(-12, 12);
         sim = new SwerveModuleHardwareSim();
         canID = CANID;
         SmartDashboard.putData("Drive-"+CANID, drivePID);
@@ -58,7 +59,8 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void update(){
         sim.update(0.02);
         double driveVolts = drivePID.calculate(sim.getWheelRadPerSec());
-        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()%2*Math.PI));
+        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()%2));
+        
         sim.setWheelMotorVolts(driveVolts);
         sim.setCasterMotorVolts(angleVolts);
         SmartDashboard.putNumber("Drive Volts"+canID, driveVolts);
