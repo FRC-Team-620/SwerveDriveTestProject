@@ -30,10 +30,10 @@ public class SwerveSubsystem extends SubsystemBase {
   SwerveModuleState backLeftState = new SwerveModuleState();
   SwerveModuleState backRightState = new SwerveModuleState();
 
-  SimSwerveModule frontLeft = new SimSwerveModule(Constants.frontLeftCAN);
-  SimSwerveModule frontRight = new SimSwerveModule(Constants.frontRightCAN);
-  SimSwerveModule backLeft = new SimSwerveModule(Constants.backLeftCAN);
-  SimSwerveModule backRight = new SimSwerveModule(Constants.backRightCAN);
+  SimSwerveModule frontLeft = new SimSwerveModule();
+  SimSwerveModule frontRight = new SimSwerveModule();
+  SimSwerveModule backLeft = new SimSwerveModule();
+  SimSwerveModule backRight = new SimSwerveModule();
   
   // var frontLeftOptimized = SwerveModuleState.optimize(frontLeft, new
   // Rotation2d(turningEncoder.getDistance()));
