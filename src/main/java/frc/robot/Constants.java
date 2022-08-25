@@ -19,4 +19,8 @@ public final class Constants {
     public static double driveKp = 10;
     public static double driveKi = 0.0;
     public static double driveKd = 0.0;
+    public static int frontLeftCAN = -1;
+    public static int frontRightCAN = -2;
+    public static int backLeftCAN = -3;
+    public static int backRightCAN = -4;
 }

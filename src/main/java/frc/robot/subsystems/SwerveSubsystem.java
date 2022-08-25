@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.SwerveVisualizer;
 import frc.robot.swerve.SimSwerveModule;
 
@@ -29,10 +30,10 @@ public class SwerveSubsystem extends SubsystemBase {
   SwerveModuleState backLeftState = new SwerveModuleState();
   SwerveModuleState backRightState = new SwerveModuleState();
 
-  SimSwerveModule frontLeft = new SimSwerveModule();
-  SimSwerveModule frontRight = new SimSwerveModule();
-  SimSwerveModule backLeft = new SimSwerveModule();
-  SimSwerveModule backRight = new SimSwerveModule();
+  SimSwerveModule frontLeft = new SimSwerveModule(Constants.frontLeftCAN);
+  SimSwerveModule frontRight = new SimSwerveModule(Constants.frontRightCAN);
+  SimSwerveModule backLeft = new SimSwerveModule(Constants.backLeftCAN);
+  SimSwerveModule backRight = new SimSwerveModule(Constants.backRightCAN);
   
   // var frontLeftOptimized = SwerveModuleState.optimize(frontLeft, new
   // Rotation2d(turningEncoder.getDistance()));
