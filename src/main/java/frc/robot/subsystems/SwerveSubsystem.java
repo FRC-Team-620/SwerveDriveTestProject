@@ -34,13 +34,14 @@ public class SwerveSubsystem extends SubsystemBase {
   SimSwerveModule frontRight = new SimSwerveModule();
   SimSwerveModule backLeft = new SimSwerveModule();
   SimSwerveModule backRight = new SimSwerveModule();
-  
+  boolean fieldCentered;
   // var frontLeftOptimized = SwerveModuleState.optimize(frontLeft, new
   // Rotation2d(turningEncoder.getDistance()));
   
-  public SwerveSubsystem() {
+  public SwerveSubsystem(boolean mode) {
     swerveDriveKinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation,
         backRightLocation);
+      fieldCentered = mode;
     // TODO: Calculate Correct robot size based off of wheel locations. May want to
     // add a constructor to the Swerve Vis that accepts a SwerveDriveKinematics
     // object.	
@@ -51,9 +52,17 @@ public class SwerveSubsystem extends SubsystemBase {
   public void swerveDrive(double xMetersPerSec, double yMetersPerSec, double rotationRadPerSec) {
   	// Calculate what angle the wheels need to be and their speed based off our
     // desired robot velocities.
-    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
-    SwerveModuleState[] actualModuleStates = new SwerveModuleState[]{frontLeft.getActualState(), frontRight.getActualState(), backLeft.getActualState(), backRight.getActualState()};
-    SwerveModuleState[] commandedModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
+    ChassisSpeeds desiredSpeeds;
+    SwerveModuleState[] commandedModuleStates;
+    if(fieldCentered){
+      desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec, swerveDriveOdometry.getPoseMeters().getRotation());
+    } 
+    else{
+      desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
+    
+    }
+    SwerveModuleState[] actualModuleStates= new SwerveModuleState[]{frontLeft.getActualState(), frontRight.getActualState(), backLeft.getActualState(), backRight.getActualState()};
+    commandedModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
     frontLeftState = commandedModuleStates[0];
     frontRightState = commandedModuleStates[1];
     backLeftState = commandedModuleStates[2];
@@ -61,6 +70,13 @@ public class SwerveSubsystem extends SubsystemBase {
 	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), actualModuleStates);
   }
 
+  public void setFieldOriented(boolean mode){
+    fieldCentered = mode;
+  }
+
+  public boolean getFieldOriented(){
+    return fieldCentered;
+  }
 
   @Override
   public void periodic() {
