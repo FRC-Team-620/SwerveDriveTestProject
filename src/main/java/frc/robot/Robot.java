@@ -92,9 +92,17 @@ public class Robot extends TimedRobot {
     double yInput = RobotMath.deadZone(-driverController.getLeftX(), 0.1);
     double rotationSpeed = RobotMath.deadZone(-driverController.getRawAxis(2), 0.1)*Constants.maxRotationRadsPerSecond;
 
-    double totalInput = Math.sqrt(xInput + yInput);
-    double xVelocity = xInput / totalInput * Constants.maxVelocityMetersPerSecond;
-    double yVelocity = yInput / totalInput * Constants.maxVelocityMetersPerSecond;
+    double totalInput = Math.sqrt(Math.abs(xInput) + Math.abs(yInput));
+    double xVelocity;
+    double yVelocity;
+    if (totalInput==0){
+      xVelocity = 0;
+      yVelocity = 0;
+    }
+    else{
+      xVelocity = xInput / totalInput * Constants.maxVelocityMetersPerSecond;
+      yVelocity = yInput / totalInput * Constants.maxVelocityMetersPerSecond;
+    }
     robotContainer.swerveSubsystem.swerveDrive(xVelocity, yVelocity, rotationSpeed);
   }
 

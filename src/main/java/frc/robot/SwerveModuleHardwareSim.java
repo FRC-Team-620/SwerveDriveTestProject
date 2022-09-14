@@ -36,7 +36,6 @@ public class SwerveModuleHardwareSim {
         casterSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian),DCMotor.getNEO(1),kTurnGearRatio); //TODO: Seems like gear ratio does not do anything
         wheelSim = new FlywheelSim(LinearSystemId.identifyVelocitySystem(DrivekvVoltSecondsPerMeter*Constants.wheelRadius,DrivekaVoltSecondsSquaredPerMeter),DCMotor.getNEO(1),kTurnGearRatio);
         // wheelSim = new FlywheelSim(DCMotor.getNEO(1), 1/kDriveGearRatio, 0.001);
-        
     }
 
     public void setCasterMotorVolts(double volts) {
@@ -48,6 +47,9 @@ public class SwerveModuleHardwareSim {
     }
 
     public double getWheelRadPerSec() {
+        if (wheelRadPerSec != wheelRadPerSec){
+            return 0;
+        }
         return wheelRadPerSec;
     }
 

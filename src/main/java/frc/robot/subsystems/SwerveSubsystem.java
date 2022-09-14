@@ -64,8 +64,12 @@ public class SwerveSubsystem extends SubsystemBase {
       desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
     }
 
+    // System.out.println(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)));
+    // System.out.println(getModuleStates());
 
-    swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), getModuleStates());
+    swerveDriveOdometry.update(
+      swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), 
+      getModuleStates());
 
 
     if (desiredSpeeds.vxMetersPerSecond == 0 && desiredSpeeds.vyMetersPerSecond == 0 && desiredSpeeds.omegaRadiansPerSecond == 0) {
@@ -117,6 +121,7 @@ public class SwerveSubsystem extends SubsystemBase {
           modules[i].setDesiredState(desiredStates[i]);
         }
   }
+  
   public SwerveModuleState[] getDesiredStates() {
 
     SwerveModuleState[] states = new SwerveModuleState[4];
@@ -133,7 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
     for (int i = 0; i <= 3; i++) {
-      states[i++] = modules[i].getActualState();
+      states[i] = modules[i].getActualState();
     }
 
     return states;
@@ -142,12 +147,13 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SwerveModuleState[] desiredModuleStates = getDesiredStates();
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, Constants.maxVelocityMetersPerSecond);
-    setModuleStates(desiredModuleStates);
+    // SwerveModuleState[] desiredModuleStates = getDesiredStates();
+    // System.out.println(desiredModuleStates);
+    // SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, Constants.maxVelocityMetersPerSecond);
+    // setModuleStates(desiredModuleStates);
 
     for (int i = 0; i <= 3; i++) {
-      modules[i++].update();
+      modules[i].update();
     }
     swerveVisualizer.update(modules[0].getActualState().angle, modules[1].getActualState().angle, modules[2].getActualState().angle, modules[3].getActualState().angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
   }

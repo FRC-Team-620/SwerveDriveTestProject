@@ -25,12 +25,15 @@ public class SimSwerveModule implements ISwerveModuleState {
         nTablesName = "SwerveModule" + id + "/";
         drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
         anglePID = new ProfiledPIDController(Constants.angleKp, Constants.angleKi, Constants.angleKd, new TrapezoidProfile.Constraints(100, 100));
+        
         anglePID.enableContinuousInput(-Math.PI, Math.PI);
         drivePID.setIntegratorRange(-12, 12);
         anglePID.setIntegratorRange(-12, 12);
         sim = new SwerveModuleHardwareSim();
+        
         SmartDashboard.putData(nTablesName + "Drive PID", drivePID);
         SmartDashboard.putData(nTablesName + "Caster PID", anglePID);
+        setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0)));
         // SmartDashboard.putNumber("Turny Velocity", 12);
         // SmartDashboard.putNumber("Turny Acceleration", 12);
     }
@@ -47,7 +50,10 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public SwerveModuleState getActualState() {
-        return new SwerveModuleState(sim.getWheelRadPerSec()* Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
+        System.out.println(sim.getWheelRadPerSec());
+        System.out.println(sim.getWheelRadPerSec() * Constants.wheelRadius);
+        System.out.println(new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
+        return new SwerveModuleState(sim.getWheelRadPerSec() * Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
     }
 
     @Override
