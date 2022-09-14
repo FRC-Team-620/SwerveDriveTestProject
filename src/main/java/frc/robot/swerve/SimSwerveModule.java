@@ -50,9 +50,6 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public SwerveModuleState getActualState() {
-        System.out.println(sim.getWheelRadPerSec());
-        System.out.println(sim.getWheelRadPerSec() * Constants.wheelRadius);
-        System.out.println(new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
         return new SwerveModuleState(sim.getWheelRadPerSec() * Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
     }
 

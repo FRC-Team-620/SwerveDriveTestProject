@@ -47,9 +47,6 @@ public class SwerveModuleHardwareSim {
     }
 
     public double getWheelRadPerSec() {
-        if (wheelRadPerSec != wheelRadPerSec){
-            return 0;
-        }
         return wheelRadPerSec;
     }
 

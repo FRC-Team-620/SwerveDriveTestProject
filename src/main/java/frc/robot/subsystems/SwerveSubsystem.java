@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.SwerveVisualizer;
@@ -48,6 +49,8 @@ public class SwerveSubsystem extends SubsystemBase {
     // object.	
     swerveDriveOdometry = new SwerveDriveOdometry(swerveDriveKinematics, new Rotation2d(0), new Pose2d(5.0, 5.0, new Rotation2d()));
     swerveVisualizer = new SwerveVisualizer(2, 2);
+    SmartDashboard.putBoolean("brake", false);
+    
   }
 
   public void swerveDrive(double xMetersPerSec, double yMetersPerSec, double rotationRadPerSec) {
@@ -55,7 +58,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds;
 
-    
+    System.out.println("" + xMetersPerSec + yMetersPerSec + rotationRadPerSec);
 
     if(fieldCentered){
       desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec, swerveDriveOdometry.getPoseMeters().getRotation());
@@ -67,18 +70,21 @@ public class SwerveSubsystem extends SubsystemBase {
     // System.out.println(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)));
     // System.out.println(getModuleStates());
 
-    swerveDriveOdometry.update(
-      swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), 
-      getModuleStates());
+    
 
 
     if (desiredSpeeds.vxMetersPerSecond == 0 && desiredSpeeds.vyMetersPerSecond == 0 && desiredSpeeds.omegaRadiansPerSecond == 0) {
+      SmartDashboard.putBoolean("/brake", true);
       brake();
       return;
     }
+    SmartDashboard.putBoolean("/brake", false);
     SwerveModuleState[] desiredModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
-    normalizeDrive(desiredModuleStates, desiredSpeeds);
+    // normalizeDrive(desiredModuleStates, desiredSpeeds);
     setModuleStates(desiredModuleStates);
+    swerveDriveOdometry.update(
+      swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), 
+      getModuleStates());
   }
 
   public void normalizeDrive(SwerveModuleState[] desiredStates, ChassisSpeeds speeds) {
@@ -99,9 +105,11 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void brake() {
-    for (SimSwerveModule module : modules) {
-      module.setDesiredState(new SwerveModuleState(0, module.getActualState().angle));
-    }
+    System.out.println(new SwerveModuleState(0, modules[0].getActualState().angle));
+    setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, modules[0].getActualState().angle), new SwerveModuleState(0, modules[1].getActualState().angle), new SwerveModuleState(0, modules[2].getActualState().angle), new SwerveModuleState(0, modules[3].getActualState().angle)});
+    // for (SimSwerveModule module : modules) {
+    //   module.setDesiredState(new SwerveModuleState(0, module.getActualState().angle));
+    // }
   }
 
   public void setFieldOriented(boolean mode){
@@ -114,12 +122,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
 
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, Constants.maxVelocityMetersPerSecond);
+    // SwerveDriveKinematics.desaturateWheelSpeeds(
+    //     desiredStates, Constants.maxVelocityMetersPerSecond);
 
-        for (int i = 0; i <= 3; i++) {
-          modules[i].setDesiredState(desiredStates[i]);
-        }
+      for (int i = 0; i <= 3; i++) {
+        modules[i].setDesiredState(desiredStates[i]);
+      }
   }
   
   public SwerveModuleState[] getDesiredStates() {
