@@ -24,16 +24,17 @@ public class SwerveSubsystem extends SubsystemBase {
   Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
   Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
 
+  // SwerveModuleState[] desiredModuleStates = new SwerveModuleState[]{new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()};
+  // SwerveModuleState frontLeftState = new SwerveModuleState();
+  // SwerveModuleState frontRightState = new SwerveModuleState();
+  // SwerveModuleState backLeftState = new SwerveModuleState();
+  // SwerveModuleState backRightState = new SwerveModuleState();
 
-  SwerveModuleState frontLeftState = new SwerveModuleState();
-  SwerveModuleState frontRightState = new SwerveModuleState();
-  SwerveModuleState backLeftState = new SwerveModuleState();
-  SwerveModuleState backRightState = new SwerveModuleState();
-
-  SimSwerveModule frontLeft = new SimSwerveModule();
-  SimSwerveModule frontRight = new SimSwerveModule();
-  SimSwerveModule backLeft = new SimSwerveModule();
-  SimSwerveModule backRight = new SimSwerveModule();
+  SimSwerveModule[] modules = new SimSwerveModule[]{new SimSwerveModule(), new SimSwerveModule(), new SimSwerveModule(), new SimSwerveModule()};
+  // SimSwerveModule frontLeft = new SimSwerveModule();
+  // SimSwerveModule frontRight = new SimSwerveModule();
+  // SimSwerveModule backLeft = new SimSwerveModule();
+  // SimSwerveModule backRight = new SimSwerveModule();
   boolean fieldCentered;
   // var frontLeftOptimized = SwerveModuleState.optimize(frontLeft, new
   // Rotation2d(turningEncoder.getDistance()));
@@ -53,21 +54,50 @@ public class SwerveSubsystem extends SubsystemBase {
   	// Calculate what angle the wheels need to be and their speed based off our
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds;
-    SwerveModuleState[] commandedModuleStates;
+
+    
+
     if(fieldCentered){
       desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec, swerveDriveOdometry.getPoseMeters().getRotation());
     } 
     else{
       desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
-    
     }
-    SwerveModuleState[] actualModuleStates= new SwerveModuleState[]{frontLeft.getActualState(), frontRight.getActualState(), backLeft.getActualState(), backRight.getActualState()};
-    commandedModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
-    frontLeftState = commandedModuleStates[0];
-    frontRightState = commandedModuleStates[1];
-    backLeftState = commandedModuleStates[2];
-    backRightState = commandedModuleStates[3];
-	swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), actualModuleStates);
+
+
+    swerveDriveOdometry.update(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), getModuleStates());
+
+
+    if (desiredSpeeds.vxMetersPerSecond == 0 && desiredSpeeds.vyMetersPerSecond == 0 && desiredSpeeds.omegaRadiansPerSecond == 0) {
+      brake();
+      return;
+    }
+    SwerveModuleState[] desiredModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
+    normalizeDrive(desiredModuleStates, desiredSpeeds);
+    setModuleStates(desiredModuleStates);
+  }
+
+  public void normalizeDrive(SwerveModuleState[] desiredStates, ChassisSpeeds speeds) {
+    double translationalK = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) / Constants.maxVelocityMetersPerSecond;
+    double rotationalK = Math.abs(speeds.omegaRadiansPerSecond) / Constants.maxRotationRadsPerSecond;
+    double k = Math.max(translationalK, rotationalK);
+
+    // Find the how fast the fastest spinning drive motor is spinning                                       
+    double realMaxSpeed = 0.0;
+    for (SwerveModuleState moduleState : desiredStates) {
+      realMaxSpeed = Math.max(realMaxSpeed, Math.abs(moduleState.speedMetersPerSecond));
+    }
+
+    double scale = Math.min(k * Constants.maxVelocityMetersPerSecond / realMaxSpeed, 1);
+    for (SwerveModuleState moduleState : desiredStates) {
+      moduleState.speedMetersPerSecond *= scale;
+    }
+  }
+
+  public void brake() {
+    for (SimSwerveModule module : modules) {
+      module.setDesiredState(new SwerveModuleState(0, module.getActualState().angle));
+    }
   }
 
   public void setFieldOriented(boolean mode){
@@ -78,19 +108,48 @@ public class SwerveSubsystem extends SubsystemBase {
     return fieldCentered;
   }
 
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        desiredStates, Constants.maxVelocityMetersPerSecond);
+
+        for (int i = 0; i <= 3; i++) {
+          modules[i].setDesiredState(desiredStates[i]);
+        }
+  }
+  public SwerveModuleState[] getDesiredStates() {
+
+    SwerveModuleState[] states = new SwerveModuleState[4];
+
+    for (int i = 0; i <= 3; i++) {
+      states[i++] = modules[i].getDesiredState();
+    }
+
+    return states;
+  }
+
+  public SwerveModuleState[] getModuleStates() {
+
+    SwerveModuleState[] states = new SwerveModuleState[4];
+
+    for (int i = 0; i <= 3; i++) {
+      states[i++] = modules[i].getActualState();
+    }
+
+    return states;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    frontLeft.setDesiredState(frontLeftState);
-    frontRight.setDesiredState(frontRightState);
-    backLeft.setDesiredState(backLeftState);
-    backRight.setDesiredState(backRightState);
+    SwerveModuleState[] desiredModuleStates = getDesiredStates();
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, Constants.maxVelocityMetersPerSecond);
+    setModuleStates(desiredModuleStates);
 
-    frontLeft.update();
-    frontRight.update();
-    backLeft.update();
-    backRight.update();
-    swerveVisualizer.update(frontLeft.getActualState().angle, frontRight.getActualState().angle, backLeft.getActualState().angle, backRight.getActualState().angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
+    for (int i = 0; i <= 3; i++) {
+      modules[i++].update();
+    }
+    swerveVisualizer.update(modules[0].getActualState().angle, modules[1].getActualState().angle, modules[2].getActualState().angle, modules[3].getActualState().angle, swerveDriveOdometry.getPoseMeters());//new Pose2d(5, 5, new Rotation2d())
   }
 
   @Override
