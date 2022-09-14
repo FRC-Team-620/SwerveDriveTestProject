@@ -88,11 +88,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double xVelocity = RobotMath.deadZone(-driverController.getLeftY(), 0.1)*Constants.maxVelocityMetersPerSecond;
-    double yVelocity = RobotMath.deadZone(-driverController.getLeftX(), 0.1)*Constants.maxVelocityMetersPerSecond;
+    double xInput = RobotMath.deadZone(-driverController.getLeftY(), 0.1);
+    double yInput = RobotMath.deadZone(-driverController.getLeftX(), 0.1);
     double rotationSpeed = RobotMath.deadZone(-driverController.getRawAxis(2), 0.1)*Constants.maxRotationRadsPerSecond;
 
-
+    double totalVelocity = Math.sqrt(xInput + yInput);
+    double xVelocity = xInput / totalVelocity * Constants.maxVelocityMetersPerSecond;
+    double yVelocity = yInput / totalVelocity * Constants.maxVelocityMetersPerSecond;
     robotContainer.swerveSubsystem.swerveDrive(xVelocity, yVelocity, rotationSpeed);
   }
 

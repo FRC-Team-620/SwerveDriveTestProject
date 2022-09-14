@@ -39,7 +39,6 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void setDesiredState(SwerveModuleState state) {
         desiredState = SwerveModuleState.optimize(state, new Rotation2d(sim.getCasterAngleRad()));
         // desiredState = state;
-        TrapezoidProfile.State goal = new TrapezoidProfile.State(MathUtil.angleModulus(desiredState.angle.getRadians()), 0);
         
         // Drive PID units are radians per second. 
         drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius); 
