@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.swerve.SwerveModuleAttributes;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -17,14 +19,19 @@ public final class Constants {
     public static double maxWheelVelocityMetersPerSecond = 2;
     public static double maxTraverseVelocityMetersPerSecond = 2;
     public static double maxRotationRadsPerSecond = 2;
+    public static double xModeMaxSpeed = 0.3;
+    public static boolean squareMode = false;
+
     public static double driveKp = 8.0;
     public static double driveKi = 1.2;
     public static double driveKd = 0.0;
     public static double angleKp = 50;
     public static double angleKi = 0;
     public static double angleKd = 2;
-    public static int frontLeftCAN = -1;
-    public static int frontRightCAN = -2;
-    public static int backLeftCAN = -3;
-    public static int backRightCAN = -4;
+    
+    public static SwerveModuleAttributes frontLeftAttributes = new SwerveModuleAttributes(1, 5, 90);
+    public static SwerveModuleAttributes frontRightAttributes = new SwerveModuleAttributes(2, 6, 0);
+    public static SwerveModuleAttributes backLeftAttributes = new SwerveModuleAttributes(3, 7, 0);
+    public static SwerveModuleAttributes backRightAttributes = new SwerveModuleAttributes(4, 8, 0);
 }
+

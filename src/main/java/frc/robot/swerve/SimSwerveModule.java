@@ -17,10 +17,12 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     SwerveModuleState desiredState;
     SwerveModuleHardwareSim sim;
+    SwerveModuleAttributes attributes;
     String nTablesName = "";
     private static int ID_TRACKER = 0; 
     int id;
-    public SimSwerveModule(){
+    public SimSwerveModule(SwerveModuleAttributes attributes){
+        this.attributes = attributes;
         id = ID_TRACKER++;
         nTablesName = "SwerveModule" + id + "/";
         drivePID = new PIDController(Constants.driveKp, Constants.driveKi, Constants.driveKd);
@@ -40,22 +42,24 @@ public class SimSwerveModule implements ISwerveModuleState {
 
     @Override
     public void setDesiredState(SwerveModuleState state) {
-        desiredState = SwerveModuleState.optimize(state, new Rotation2d(sim.getCasterAngleRad()));
+        SwerveModuleState stateWithOffset = new SwerveModuleState(state.speedMetersPerSecond, new Rotation2d( Math.PI / 180 * (state.angle.getDegrees() + attributes.angleOffset)));
+        desiredState = SwerveModuleState.optimize(stateWithOffset, new Rotation2d(sim.getCasterAngleRad()));
         // desiredState = state;
         
         // Drive PID units are radians per second. 
         drivePID.setSetpoint(desiredState.speedMetersPerSecond/Constants.wheelRadius); 
-        anglePID.setGoal(MathUtil.angleModulus(desiredState.angle.getRadians()));
+        anglePID.setGoal(MathUtil.angleModulus(desiredState.angle.getRadians() - (Math.PI/180 * attributes.angleOffset)));
     }
 
     @Override
     public SwerveModuleState getActualState() {
-        return new SwerveModuleState(sim.getWheelRadPerSec() * Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())));
+        return new SwerveModuleState(sim.getWheelRadPerSec() * Constants.wheelRadius, new Rotation2d(MathUtil.angleModulus(sim.getCasterAngleRad())-(Math.PI/180*attributes.angleOffset)));
     }
 
     @Override
     public SwerveModuleState getDesiredState() {
-        return desiredState;
+        SwerveModuleState withoutOffset = new SwerveModuleState(desiredState.speedMetersPerSecond, new Rotation2d(Math.PI / 180 * (desiredState.angle.getDegrees()-attributes.angleOffset)));
+        return withoutOffset;
     }
 
     @Override
@@ -67,7 +71,7 @@ public class SimSwerveModule implements ISwerveModuleState {
     public void update(){
         sim.update(0.02);
         double driveVolts = drivePID.calculate(sim.getWheelRadPerSec());
-        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad()));
+        double angleVolts = anglePID.calculate(MathUtil.angleModulus(sim.getCasterAngleRad() - (attributes.angleOffset * Math.PI/180)));
         
         sim.setWheelMotorVolts(driveVolts);
         sim.setCasterMotorVolts(angleVolts);
