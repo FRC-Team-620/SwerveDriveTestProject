@@ -14,7 +14,8 @@ package frc.robot;
  */
 public final class Constants {
     public static double wheelRadius = 0.04;
-    public static double maxVelocityMetersPerSecond = 2;
+    public static double maxWheelVelocityMetersPerSecond = 2;
+    public static double maxTraverseVelocityMetersPerSecond = 2;
     public static double maxRotationRadsPerSecond = 2;
     public static double driveKp = 8.0;
     public static double driveKi = 1.2;

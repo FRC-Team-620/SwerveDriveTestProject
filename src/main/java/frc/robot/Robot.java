@@ -100,8 +100,8 @@ public class Robot extends TimedRobot {
       yVelocity = 0;
     }
     else{
-      xVelocity = xInput / totalInput * Constants.maxVelocityMetersPerSecond;
-      yVelocity = yInput / totalInput * Constants.maxVelocityMetersPerSecond;
+      xVelocity = xInput / totalInput * Constants.maxTraverseVelocityMetersPerSecond;
+      yVelocity = yInput / totalInput * Constants.maxTraverseVelocityMetersPerSecond;
     }
     robotContainer.swerveSubsystem.swerveDrive(xVelocity, yVelocity, rotationSpeed);
   }

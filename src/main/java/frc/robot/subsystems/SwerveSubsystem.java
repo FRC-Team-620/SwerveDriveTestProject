@@ -58,19 +58,12 @@ public class SwerveSubsystem extends SubsystemBase {
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds;
 
-    System.out.println("" + xMetersPerSec + yMetersPerSec + rotationRadPerSec);
-
     if(fieldCentered){
       desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec, swerveDriveOdometry.getPoseMeters().getRotation());
     } 
     else{
       desiredSpeeds = new ChassisSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec);
     }
-
-    // System.out.println(swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)));
-    // System.out.println(getModuleStates());
-
-    
 
 
     if (desiredSpeeds.vxMetersPerSecond == 0 && desiredSpeeds.vyMetersPerSecond == 0 && desiredSpeeds.omegaRadiansPerSecond == 0) {
@@ -80,7 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     SmartDashboard.putBoolean("/brake", false);
     SwerveModuleState[] desiredModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredSpeeds);
-    // normalizeDrive(desiredModuleStates, desiredSpeeds);
+    normalizeDrive(desiredModuleStates, desiredSpeeds);
     setModuleStates(desiredModuleStates);
     swerveDriveOdometry.update(
       swerveDriveOdometry.getPoseMeters().getRotation().plus(new Rotation2d(rotationRadPerSec*0.02)), 
@@ -88,7 +81,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void normalizeDrive(SwerveModuleState[] desiredStates, ChassisSpeeds speeds) {
-    double translationalK = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) / Constants.maxVelocityMetersPerSecond;
+    double translationalK = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond) / Constants.maxTraverseVelocityMetersPerSecond;
     double rotationalK = Math.abs(speeds.omegaRadiansPerSecond) / Constants.maxRotationRadsPerSecond;
     double k = Math.max(translationalK, rotationalK);
 
@@ -98,18 +91,14 @@ public class SwerveSubsystem extends SubsystemBase {
       realMaxSpeed = Math.max(realMaxSpeed, Math.abs(moduleState.speedMetersPerSecond));
     }
 
-    double scale = Math.min(k * Constants.maxVelocityMetersPerSecond / realMaxSpeed, 1);
+    double scale = Math.min(k * Constants.maxWheelVelocityMetersPerSecond / realMaxSpeed, 1);
     for (SwerveModuleState moduleState : desiredStates) {
       moduleState.speedMetersPerSecond *= scale;
     }
   }
 
   public void brake() {
-    System.out.println(new SwerveModuleState(0, modules[0].getActualState().angle));
     setModuleStates(new SwerveModuleState[]{new SwerveModuleState(0, modules[0].getActualState().angle), new SwerveModuleState(0, modules[1].getActualState().angle), new SwerveModuleState(0, modules[2].getActualState().angle), new SwerveModuleState(0, modules[3].getActualState().angle)});
-    // for (SimSwerveModule module : modules) {
-    //   module.setDesiredState(new SwerveModuleState(0, module.getActualState().angle));
-    // }
   }
 
   public void setFieldOriented(boolean mode){
@@ -122,8 +111,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
 
-    // SwerveDriveKinematics.desaturateWheelSpeeds(
-    //     desiredStates, Constants.maxVelocityMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        desiredStates, Constants.maxWheelVelocityMetersPerSecond);
 
       for (int i = 0; i <= 3; i++) {
         modules[i].setDesiredState(desiredStates[i]);
@@ -137,7 +126,6 @@ public class SwerveSubsystem extends SubsystemBase {
     for (int i = 0; i <= 3; i++) {
       states[i++] = modules[i].getDesiredState();
     }
-
     return states;
   }
 
@@ -154,11 +142,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // SwerveModuleState[] desiredModuleStates = getDesiredStates();
-    // System.out.println(desiredModuleStates);
-    // SwerveDriveKinematics.desaturateWheelSpeeds(desiredModuleStates, Constants.maxVelocityMetersPerSecond);
-    // setModuleStates(desiredModuleStates);
 
     for (int i = 0; i <= 3; i++) {
       modules[i].update();
