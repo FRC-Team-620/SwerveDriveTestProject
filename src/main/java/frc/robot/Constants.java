@@ -16,9 +16,9 @@ import frc.robot.swerve.SwerveModuleAttributes;
  */
 public final class Constants {
     public static double wheelRadius = 0.04;
-    public static double maxWheelVelocityMetersPerSecond = 2;
-    public static double maxTraverseVelocityMetersPerSecond = 2;
-    public static double maxRotationRadsPerSecond = 2;
+    public static double maxWheelVelocityMetersPerSecond = 5.3;
+    public static double maxTraverseVelocityMetersPerSecond = 5;
+    public static double maxRotationRadsPerSecond = 2.5;
     public static double xModeMaxSpeed = 0.3;
     public static boolean squareMode = false;
 
