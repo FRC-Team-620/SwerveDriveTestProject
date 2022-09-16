@@ -45,7 +45,7 @@ public class SwerveSubsystem extends SubsystemBase {
   	// Calculate what angle the wheels need to be and their speed based off our
     // desired robot velocities.
     ChassisSpeeds desiredSpeeds;
-
+    
     // Calculate the desired chassis speeds from the inputs, be they field centered or not. 
     if(fieldCentered){
       desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSec, yMetersPerSec, rotationRadPerSec, swerveDriveOdometry.getPoseMeters().getRotation());
@@ -111,6 +111,10 @@ public class SwerveSubsystem extends SubsystemBase {
       setModuleStates(states);
     }
     
+  }
+  public void tankDriveSet(double leftSpeed, double rightSpeed) {
+    setModuleStates(new SwerveModuleState[]{new SwerveModuleState(leftSpeed, new Rotation2d(0)), new SwerveModuleState(rightSpeed, new Rotation2d(0)), new SwerveModuleState(rightSpeed, new Rotation2d(0)), new SwerveModuleState(leftSpeed, new Rotation2d(0))});
+    // drive.tankDrive(leftSpeed, rightSpeed);
   }
 
   public void setFieldOriented(boolean mode){
